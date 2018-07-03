@@ -32,6 +32,10 @@ import raman_configs
 
 ### -------------- get things ready --------------- ###
 
+# system
+__location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
 # --- Bokeh related
 # Save current Bokeh document for later use
 doc = curdoc()
@@ -311,7 +315,7 @@ save_data_button = Button(label="Save Current Data")
 save_data_button.on_click(callback_save_data_button)
 
 # Load file button
-with open("load_file.js", 'r') as f:
+with open(os.path.join(__location__, 'load_file.js'), 'r') as f:
     load_file_js = f.read()
 load_file_button = Button(label="Load Data From File", button_type='success', callback=CustomJS(args=dict(file_source=file_source), code=load_file_js))
 
