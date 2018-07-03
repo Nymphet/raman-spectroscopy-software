@@ -12,10 +12,10 @@ function loadBokehServer() {
     var PythonShell = require('python-shell');
     var options = {
         mode: 'text',
-        pythonPath: 'python3',
+        pythonPath: '/usr/local/bin/python3',
         pythonOptions: ['-m'],
         scriptPath: '',
-        args: ['serve', './Raman']
+        args: ['serve', __dirname.concat('/Raman/')]
     };
     var pshell = PythonShell.run('bokeh', options, function (err, results) {
         if (err) throw err;
@@ -30,8 +30,8 @@ function createWindow() {
     var pshell = loadBokehServer();
 
     win = new BrowserWindow({
-        width: 1200,
-        height: 800,
+        width: 1366,
+        height: 768,
         show: false
     })
 

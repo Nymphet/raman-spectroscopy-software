@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 import base64
 import io
@@ -98,7 +99,8 @@ def callback_open_serial_port():
     if raman_configs.IS_TESTING:
         ser = fake_serial.FakeSerial()
     else:
-        ser = serial.Serial(raman_configs.SERIAL_PORT, raman_configs.BAUD_RATE, timeout=1)
+        ser = serial.Serial(raman_configs.SERIAL_PORT,
+                            raman_configs.BAUD_RATE, timeout=1)
 
     # --- configure CCD to it's default settings
     # default integration time
@@ -162,7 +164,8 @@ def callback_select_integration_time_text_input(attr, old, new):
 
 def callback_select_integration_time_unit_radio_button_group(attr, old, new):
     global user_CCD_integration_unit
-    user_CCD_integration_unit = ['ms', 's'][int(select_integration_time_unit_radio_button_group.active)]
+    user_CCD_integration_unit = ['ms', 's'][int(
+        select_integration_time_unit_radio_button_group.active)]
 
 
 def callback_set_integration_time_button():
@@ -186,6 +189,8 @@ def callback_auto_append_current_time_or_not_radio_button_group(attr, old, new):
 def callback_select_data_file_format_select(attr, old, new):
     global user_selected_data_file_format
     user_selected_data_file_format = select_data_file_format_select.value
+
+# old style, save to some path without prompting. The new save button uses its own CustomJS callback
 
 
 def callback_save_data_button():
@@ -310,14 +315,30 @@ select_data_file_format_select = Select(
 select_data_file_format_select.on_change('value',
                                          callback_select_data_file_format_select)
 
-# Save Data Button
+# # Save Data Button
 save_data_button = Button(label="Save Current Data")
 save_data_button.on_click(callback_save_data_button)
+# # 20180704: just another way of saving data, need more work
+# with open(os.path.join(__location__, 'static/js/download_saved_file.js'), 'r') as f:
+#     download_saved_file_js = f.read()
+
+# def make_new_save_data_callback():
+#     new_file_content = CCD_utils.create_to_save_data(user_selected_data_file_format, waveform_data_source.data)
+#     return CustomJS(
+#         args=dict(
+#             file_content=new_file_content,
+#             filename = raman_configs.DEFAULT_FILE_NAME
+#             ),
+#             code=download_saved_file_js)
+
+# save_data_button = Button(label="Save Current Data")
+# save_data_button.on_click(make_new_save_data_callback)
 
 # Load file button
-with open(os.path.join(__location__, 'load_file.js'), 'r') as f:
+with open(os.path.join(__location__, 'static/js/load_file.js'), 'r') as f:
     load_file_js = f.read()
-load_file_button = Button(label="Load Data From File", button_type='success', callback=CustomJS(args=dict(file_source=file_source), code=load_file_js))
+load_file_button = Button(label="Load Data From File", button_type='success', callback=CustomJS(
+    args=dict(file_source=file_source), code=load_file_js))
 
 loaded_file_div = Div(text="Loaded file: None")
 
@@ -328,7 +349,7 @@ calibrate_params_source.on_change('data', callback_calibrate_params_change)
 manual_calibrate_data_table_columns = [
     TableColumn(field="pixel_indices", title="Pixel Index",
                 editor=NumberEditor(), formatter=NumberFormatter()),
-    TableColumn(field="wavenumbers", title="Wavenumber/cm⁻¹",
+    TableColumn(field="wavenumbers", title="Wavenumber/"+raman_configs.WAVELENGTH_UNIT,
                 editor=NumberEditor(), formatter=NumberFormatter()),
 ]
 
@@ -374,7 +395,7 @@ auto_detect_peaks_button.on_click(callback_auto_detect_peaks_button)
 
 
 auto_detect_peaks_columns = [
-    TableColumn(field="wavenumber_peaks", title="Peaks/cm⁻¹",
+    TableColumn(field="wavenumber_peaks", title="Peaks/cm-1",
                 formatter=NumberFormatter()),
     TableColumn(field="intensities", title="Intensity",
                 formatter=NumberFormatter()),
@@ -391,40 +412,39 @@ place_holder3 = Div(text="", height=20)
 
 # --- Layouts
 
-inputs = column(open_serial_port_button,
-                start_collect_data_button,
-                stop_button, onestep_button, place_holder1,
-                select_integration_time_text_input,
-                select_integration_time_unit_radio_button_group,
-                set_integration_time_button,
-                place_holder2,
-                save_path_text_input,
-                select_data_file_format_select,
-                auto_append_current_time_or_not_radio_button_group,
-                save_data_button,
-                place_holder3,
-                load_file_button,
-                loaded_file_div
-                )
+input_widgets = column(open_serial_port_button,
+                       start_collect_data_button,
+                       stop_button, onestep_button, place_holder1,
+                       select_integration_time_text_input,
+                       select_integration_time_unit_radio_button_group,
+                       set_integration_time_button,
+                       place_holder2,
+                       save_path_text_input,
+                       select_data_file_format_select,
+                       auto_append_current_time_or_not_radio_button_group,
+                       save_data_button,
+                       place_holder3,
+                       load_file_button,
+                       loaded_file_div
+                       )
 
 
-figures = column(raman_spec_figure, rawdata_figure)
+figure_widgets = column(raman_spec_figure, rawdata_figure)
 
-auto_peak_detections = column(auto_detect_peaks_snr_slider,
-                              auto_detect_peaks_widths_range_slider,
-                              auto_detect_peaks_button, auto_detect_peaks_data_table
-                              )
+auto_peak_detection_widgets = column(auto_detect_peaks_snr_slider,
+                                     auto_detect_peaks_widths_range_slider,
+                                     auto_detect_peaks_button, auto_detect_peaks_data_table
+                                     )
 
-column2 = column(manual_calibrate_data_table, auto_peak_detections)
+calibrate_widgets = column(manual_calibrate_data_table,
+                           select_calibration_regression_model_select, calibrate_curve_figure)
 
-column3 = column(select_calibration_regression_model_select,
-                 calibrate_curve_figure
-                 )
+column1 = row(figure_widgets, input_widgets)
+column2 = row(calibrate_widgets, auto_peak_detection_widgets)
+
 
 # put the button and plot in a layout and add to the document
-doc.add_root(row(figures,
-                 inputs,
-                 column2,
-                 column3))
+doc.add_root(column(column1,
+                    column2))
 
 ### -------------- make the document -------------- ###

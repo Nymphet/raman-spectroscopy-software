@@ -23,6 +23,18 @@ def to_list_all(data):
     return data
 
 
+def create_to_save_data(format, data_dict):
+    new_dict = dict(data_dict)
+    new_dict = to_list_all(new_dict)
+    if format == 'JSON':
+        return json.dumps(new_dict)
+    elif format == 'XML':
+        return dicttoxml.dicttoxml(new_dict)
+    elif format == 'CSV':
+        return ''
+    elif format == 'XLSX':
+        return ''
+
 def save_data(format, filename, data_dict, append_time):
     # make a copy to convert it to dict of lists
     new_dict = dict(data_dict)
@@ -31,18 +43,9 @@ def save_data(format, filename, data_dict, append_time):
         new_filename = filename + datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     else:
         new_filename = filename
-    if format == 'JSON':
-        with open(new_filename, 'w') as f:
-            f.write(json.dumps(new_dict))
-    elif format == 'XML':
-        with open(new_filename, 'w') as f:
-            f.write(dicttoxml.dicttoxml(new_dict))
-    elif format == 'CSV':
-        pass
-    elif format == 'XLSX':
-        pass
-    else:
-        pass
+
+    with open(new_filename, 'w') as f:
+        f.write(create_to_save_data(format, data_dict))
 
 
 def remove_zeros_and_sort(list1, list2):

@@ -18,8 +18,9 @@ DEFAULT_CCD_INTEGRATION_INTERVAL = 1
 DEFAULT_CCD_INTEGRATION_UNIT = 's'
 
 # saving settings
-DEFAULT_SAVE_PATH = '../test'
+DEFAULT_SAVE_PATH = '~/RamanData/Untitled_Raman_Data'
 DEFAULT_FILE_FORMAT = 'JSON'
+DEFAULT_FILE_NAME = 'Untitled_Raman_Data'
 AUTO_APPEND_CURRENT_TIME = True
 
 # default calibrate parameters
