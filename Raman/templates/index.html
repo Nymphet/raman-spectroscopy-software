@@ -1,0 +1,26 @@
+{% extends base %}
+
+{% block postamble %}
+  <style>
+    h1 {
+      margin: 2em 0 0 0;
+      color: #2e484c;
+      font-family: 'Julius Sans One', sans-serif;
+      font-size: 1.4em;
+      text-transform: uppercase;
+    }
+    p {
+      font: "Libre Baskerville", sans-serif;
+      text-align: justify;
+      text-justify: inter-word;
+    }
+  </style>
+{% endblock %}
+
+{% block contents %}
+  <div>
+    <h1>Raman Spectroscopy</h1>
+    <p> This is a demo of the raman spectroscopy software. </p>
+  </div>
+  {{ super() }}
+{% endblock %}

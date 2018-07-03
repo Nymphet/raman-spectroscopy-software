@@ -15,7 +15,7 @@ function loadBokehServer() {
         pythonPath: 'python3',
         pythonOptions: ['-m'],
         scriptPath: '',
-        args: ['serve', './Raman/raman_bokeh_app.py']
+        args: ['serve', './Raman']
     };
     var pshell = PythonShell.run('bokeh', options, function (err, results) {
         if (err) throw err;
@@ -42,7 +42,7 @@ function createWindow() {
     // https://github.com/bokeh/bokeh/issues/4272
     setTimeout(function () {
         win.show();
-        win.loadURL('http://localhost:5006/raman_bokeh_app');
+        win.loadURL('http://localhost:5006/Raman');
     }, 1000);
 
     // Emitted when the window is closed.
