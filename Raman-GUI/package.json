@@ -1,0 +1,11 @@
+{
+  "name": "raman-gui",
+  "version": "0.1.0",
+  "description": "The Electron GUI for Raman Spectroscopy Software",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Zhi Zi",
+  "license": "Apache-2.0"
+}
