@@ -9,6 +9,7 @@
   "author": "Zhi Zi",
   "license": "Apache-2.0",
   "devDependencies": {
-    "electron": "^2.0.3"
+    "electron": "^2.0.3",
+    "python-shell": "^0.5.0"
   }
 }
