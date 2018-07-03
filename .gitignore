@@ -169,3 +169,6 @@ typings/
 
 # next.js build output
 .next
+
+# builds
+raman-gui-darwin-x64

@@ -3,31 +3,46 @@ const {
     BrowserWindow
 } = require('electron')
 
+const fixPath = require('fix-path');
+
+fixPath();
+
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win
 
+// function loadBokehServer() {
+//     // Load the Bokeh Server.
+//     var PythonShell = require('python-shell');
+//     var options = {
+//         mode: 'text',
+//         pythonPath: '/usr/local/bin/python3',
+//         pythonOptions: ['-m'],
+//         scriptPath: '',
+//         args: ['serve', __dirname.concat('/Raman/')]
+//     };
+//     var pshell = PythonShell.run('bokeh', options, function (err, results) {
+//         if (err) throw err;
+//         console.log('results: %j', results);
+//     });
+//     return pshell;
+// }
+
 function loadBokehServer() {
     // Load the Bokeh Server.
-    var PythonShell = require('python-shell');
-    var options = {
-        mode: 'text',
-        pythonPath: '/usr/local/bin/python3',
-        pythonOptions: ['-m'],
-        scriptPath: '',
-        args: ['serve', __dirname.concat('/Raman/')]
-    };
-    var pshell = PythonShell.run('bokeh', options, function (err, results) {
-        if (err) throw err;
-        console.log('results: %j', results);
-    });
-    return pshell;
-}
+    var shell = require('shelljs');
+    var raman_app_path = __dirname.concat('/Raman/');
+    var command = 'python3 -m bokeh serve '.concat(raman_app_path)
 
+    var python_child = shell.exec(command, {async:true});
+
+    return python_child;
+}
 
 function createWindow() {
     // Create the browser window.
-    var pshell = loadBokehServer();
+    var bokehserver = loadBokehServer();
 
     win = new BrowserWindow({
         width: 1366,
@@ -50,7 +65,7 @@ function createWindow() {
         // Dereference the window object, usually you would store windows
         // in an array if your app supports multi windows, this is the time
         // when you should delete the corresponding element.
-        pshell.childProcess.kill();
+        bokehserver.kill();
         win = null;
     })
 }
