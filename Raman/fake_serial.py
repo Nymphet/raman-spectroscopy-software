@@ -22,8 +22,8 @@ class FakeSerial():
     def read(self, bytes_length):
         self.data_length = bytes_length // 2
         self.fmt = '<{data_length}H'.format(data_length=self.data_length)
-        self.fake_data = np.random.randint(1, 3000, self.data_length)
-        # self.fake_data = random_walk(15000, self.data_length, 3)
+        # self.fake_data = np.random.randint(1, 3000, self.data_length)
+        self.fake_data = random_walk(15000, self.data_length, 3)
         return struct.pack(self.fmt, *self.fake_data)
 
     def inWaiting(self):
