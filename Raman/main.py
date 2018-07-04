@@ -67,6 +67,8 @@ raman_spec_waveform = raman_spec_figure.line(
     'raman_spec_x', 'intensities', line_width=1, source=waveform_data_source)
 
 # --- a lot of default settings
+user_serial_port = raman_configs.DEFAULT_SERIAL_PORT
+user_baud_rate = raman_configs.DEFAULT_BAUD_RATE
 user_CCD_integration_interval = raman_configs.DEFAULT_CCD_INTEGRATION_INTERVAL
 user_CCD_integration_unit = raman_configs.DEFAULT_CCD_INTEGRATION_UNIT
 user_save_path = raman_configs.DEFAULT_SAVE_PATH
@@ -92,15 +94,34 @@ ser = None
 
 
 ### -------------- define callbacks --------------- ###
+def callback_select_serial_port_text_input(att, old, new):
+    global user_serial_port
+    try:
+        user_serial_port = select_serial_port_text_input.value
+    except Exception as inst:
+        print(type(inst), inst.args)
+
+
+def callback_select_baud_rate_text_input(attr, old, new):
+    global user_baud_rate
+    try:
+        user_baud_rate = int(
+            select_baud_rate_text_input.value)
+    except Exception as inst:
+        print(type(inst), inst.args)
+
+
 def callback_open_serial_port():
     global ser
+    global user_serial_port
+    global user_baud_rate
     # --- Serial port related
     # open serial port
     if raman_configs.IS_TESTING:
         ser = fake_serial.FakeSerial()
     else:
-        ser = serial.Serial(raman_configs.SERIAL_PORT,
-                            raman_configs.BAUD_RATE, timeout=1)
+        ser = serial.Serial(user_serial_port,
+                            user_baud_rate, timeout=1)
 
     # --- configure CCD to it's default settings
     # default integration time
@@ -267,6 +288,18 @@ def callback_auto_detect_peaks_button():
 ### -------------- make the document -------------- ###
 
 # add widgets
+# Select Serial Port Text Input
+select_serial_port_text_input = TextInput(
+    title="Serial Port", value=raman_configs.DEFAULT_SERIAL_PORT)
+select_serial_port_text_input.on_change(
+    'value', callback_select_serial_port_text_input)
+
+# Select Baud Rate
+select_baud_rate_text_input = TextInput(
+    title="Baud Rate", value=str(raman_configs.DEFAULT_BAUD_RATE))
+select_baud_rate_text_input.on_change(
+    'value', callback_select_baud_rate_text_input)
+
 # Open Serial Port Button
 open_serial_port_button = Button(label="Open Serial Port")
 open_serial_port_button.on_click(callback_open_serial_port)
@@ -289,6 +322,7 @@ select_integration_time_text_input = TextInput(
     title="Integration Time", value=str(raman_configs.DEFAULT_CCD_INTEGRATION_INTERVAL))
 select_integration_time_text_input.on_change(
     'value', callback_select_integration_time_text_input)
+
 # Unit of Integration Time
 select_integration_time_unit_radio_button_group = RadioButtonGroup(
     labels=['ms', 's'], active=(1 if raman_configs.DEFAULT_CCD_INTEGRATION_UNIT == 's' else 0))
@@ -318,26 +352,30 @@ select_data_file_format_select.on_change('value',
 # # Save Data Button
 save_data_button = Button(label="Save Current Data")
 save_data_button.on_click(callback_save_data_button)
-# # 20180704: just another way of saving data, need more work
-# with open(os.path.join(__location__, 'static/js/download_saved_file.js'), 'r') as f:
-#     download_saved_file_js = f.read()
 
-# def make_new_save_data_callback():
-#     new_file_content = CCD_utils.create_to_save_data(user_selected_data_file_format, waveform_data_source.data)
-#     return CustomJS(
-#         args=dict(
-#             file_content=new_file_content,
-#             filename = raman_configs.DEFAULT_FILE_NAME
-#             ),
-#             code=download_saved_file_js)
+# # 20180704: just another way of saving data
+with open(os.path.join(__location__, 'static/js/export_to_json.js'), 'r') as f:
+    export_to_json_js = f.read()
 
-# save_data_button = Button(label="Save Current Data")
-# save_data_button.on_click(make_new_save_data_callback)
+export_data_as_json_button = Button(label="Export Current Data as JSON", callback=CustomJS(
+        args=dict(
+            source=waveform_data_source,
+            ),
+            code=export_to_json_js))
+
+with open(os.path.join(__location__, 'static/js/export_to_csv.js'), 'r') as f:
+    export_to_csv_js = f.read()
+
+export_data_as_csv_button = Button(label="Export Current Data as CSV", callback=CustomJS(
+        args=dict(
+            source=waveform_data_source,
+            ),
+            code=export_to_csv_js))
 
 # Load file button
 with open(os.path.join(__location__, 'static/js/load_file.js'), 'r') as f:
     load_file_js = f.read()
-load_file_button = Button(label="Load Data From File", button_type='success', callback=CustomJS(
+load_file_button = Button(label="Load Data From JSON File", button_type='success', callback=CustomJS(
     args=dict(file_source=file_source), code=load_file_js))
 
 loaded_file_div = Div(text="Loaded file: None")
@@ -412,7 +450,9 @@ place_holder3 = Div(text="", height=20)
 
 # --- Layouts
 
-input_widgets = column(open_serial_port_button,
+input_widgets = column(select_serial_port_text_input,
+                       select_baud_rate_text_input,
+                       open_serial_port_button,
                        start_collect_data_button,
                        stop_button, onestep_button, place_holder1,
                        select_integration_time_text_input,
@@ -423,6 +463,8 @@ input_widgets = column(open_serial_port_button,
                        select_data_file_format_select,
                        auto_append_current_time_or_not_radio_button_group,
                        save_data_button,
+                       export_data_as_json_button,
+                       export_data_as_csv_button,
                        place_holder3,
                        load_file_button,
                        loaded_file_div

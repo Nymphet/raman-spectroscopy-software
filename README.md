@@ -68,9 +68,11 @@ The Arduino_simulator is a simple CCD controller simulator that works on most ar
 
 # TODO
 
-- The save-file functionality is currently implemented simply with a python function and is not very convenient to use. Consider switch to pure javascript call to save the file at frontend.
-- There is no frontend design for now and the layout looks very strange. Consider integrate with Bootstrap.
+- The save-file functionality is currently implemented simply with a python function and is not very convenient to use. Consider switching to pure javascript call to save the file at frontend.
+- There is no frontend design for now and the layout looks very strange. Consider integrating with Bootstrap.
 
 # License
 
 License for current version is the Apache License 2.0.
+
+Copyright 2018 [Zhi Zi](mailto:x@zzi.io)
