@@ -3,7 +3,7 @@ import struct
 import time
 
 
-fake_data_generation_interval = 0.1
+fake_data_generation_interval = 1
 
 
 def random_walk(start, length, step_size):

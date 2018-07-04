@@ -70,11 +70,23 @@ def create_1d_regression(data_dict, model):
             pixel_indices, wavenumbers, k=raman_configs.DEFAULT_B_SPLINE_PARAMS_K, s=raman_configs.DEFAULT_B_SPLINE_PARAMS_S)
         spline = interpolate.BSpline(t, c, k, extrapolate=True)
         return spline
-    if model == 'Polynomial':
+    if model == 'Polynomial-2':
         fit_params = np.polyfit(
-            pixel_indices, wavenumbers, raman_configs.DEFAULT_POLINOMIAL_ORDER)
+            pixel_indices, wavenumbers, 2)
         poly = np.poly1d(fit_params)
         return poly
+    if model == 'Polynomial-3':
+        fit_params = np.polyfit(
+            pixel_indices, wavenumbers, 3)
+        poly = np.poly1d(fit_params)
+        return poly
+    if model == 'Linear':
+        fit_params = np.polyfit(
+            pixel_indices, wavenumbers, 1)
+        poly = np.poly1d(fit_params)
+        return poly
+    if model == 'User Defined':
+        return raman_configs.USER_DEFINED_MODEL(pixel_indices, wavenumbers)
     # if model is not available, do nothing
     return lambda x: x
 

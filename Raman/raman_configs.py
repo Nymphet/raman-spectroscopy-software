@@ -18,7 +18,7 @@ DEFAULT_CCD_INTEGRATION_INTERVAL = 1
 DEFAULT_CCD_INTEGRATION_UNIT = 's'
 
 # saving settings
-DEFAULT_SAVE_PATH = '~/RamanData/Untitled_Raman_Data'
+DEFAULT_SAVE_PATH = '../Untitled_Raman_Data'
 DEFAULT_FILE_FORMAT = 'JSON'
 DEFAULT_FILE_NAME = 'Untitled_Raman_Data'
 AUTO_APPEND_CURRENT_TIME = True
@@ -27,12 +27,12 @@ AUTO_APPEND_CURRENT_TIME = True
 # format: dict({pixel_indices:[...], wavenumber:[...]})
 DEFAULT_CALIBRATION_PARAMS = dict(
     {
-        "pixel_indices": [358, 469, 500, 624, 749, 1856, 1899, 1936, 1909, 1897, 1873, 1836, 743, 674, 619, 544, 456, 304],
-        "wavenumbers": [882, 1049, 1095, 1275, 1453, 2879, 2929, 2973, 2937, 2923, 2870, 2852, 1443, 1346, 1266, 1157, 1027, 801]
+        "pixel_indices": [10, 400, 700, 900, 2000, 3000, 3200],
+        "wavenumbers": [20, 810, 1390, 1820, 3980, 6010, 6400]
     })
 
 CALIBRATION_REGRESSION_MODEL_CHOICES = [
-    'B-Spline', 'Polynomial', 'Log', 'User Defined...']
+    'B-Spline', 'Polynomial-2', 'Polynomial-3', 'Linear', 'Do Nothing', 'User Defined']
 DEFAULT_CALIBRATION_REGRESSION_MODEL = CALIBRATION_REGRESSION_MODEL_CHOICES[0]
 
 # Polynomial model
@@ -43,8 +43,12 @@ DEFAULT_POLINOMIAL_ORDER = 3
 DEFAULT_B_SPLINE_PARAMS_K = 3
 DEFAULT_B_SPLINE_PARAMS_S = 0
 
-USER_DEFINED_MODEL_PATH = ''
 
+# Define your model here.
+# The model must accept two parameters: numpy array of pixel_indices and wavenumbers
+# The model must return a single function that 
+#   accepts a numpy array as input and returns a numpy array with the same length
+USER_DEFINED_MODEL = lambda pixel_indices, wavenumbers: (lambda x: x)
 
 # Automatic Peak Detection settings
 # The waveform is convolved with wavelet(width) for each width in widths
