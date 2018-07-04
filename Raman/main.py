@@ -69,15 +69,19 @@ raman_spec_waveform = raman_spec_figure.line(
 # --- a lot of default settings
 user_serial_port = raman_configs.DEFAULT_SERIAL_PORT
 user_baud_rate = raman_configs.DEFAULT_BAUD_RATE
+
 user_CCD_integration_interval = raman_configs.DEFAULT_CCD_INTEGRATION_INTERVAL
 user_CCD_integration_unit = raman_configs.DEFAULT_CCD_INTEGRATION_UNIT
+
 user_save_path = raman_configs.DEFAULT_SAVE_PATH
 user_selected_data_file_format = raman_configs.DEFAULT_FILE_FORMAT
 auto_append_current_time = raman_configs.AUTO_APPEND_CURRENT_TIME
+
 user_calibration_params = raman_configs.DEFAULT_CALIBRATION_PARAMS
 user_selected_calibration_regression_model = raman_configs.DEFAULT_CALIBRATION_REGRESSION_MODEL
 calibrate_model = CCD_utils.create_1d_regression(
     user_calibration_params, user_selected_calibration_regression_model)
+
 user_AUTO_PEAK_DETECT_MIN_SNR = raman_configs.AUTO_PEAK_DETECT_MIN_SNR
 user_AUTO_PEAK_DETECT_WIDTHS_MIN = raman_configs.AUTO_PEAK_DETECT_WIDTHS_MIN
 user_AUTO_PEAK_DETECT_WIDTHS_MAX = raman_configs.AUTO_PEAK_DETECT_WIDTHS_MAX
@@ -86,6 +90,11 @@ peaks_data_source = ColumnDataSource(data=dict(peaks=peaks, wavenumber_peaks=cal
     peaks), intensities=np.array([waveform_data_source.data['intensities'][i] for i in peaks])))
 peaks_marks = raman_spec_figure.inverted_triangle(
     'wavenumber_peaks', 'intensities', source=peaks_data_source, color='pink')
+
+user_NOISE_SAMPLE_SIZE = 100
+user_SIGNAL_SAMPLE_SIZE = 100
+user_SAMPLE_INTERVAL_IN_SECONDS = 5
+
 
 # --- before serial port is opened, it should be none.
 ser = None
@@ -165,8 +174,22 @@ def callback_start_collecting_data_button():
 
 
 def callback_stop_button():
-    doc.remove_periodic_callback(callback_update_data)
-    ser.write(raman_configs.STOP_COMMAND)
+    try:
+        doc.remove_periodic_callback(callback_update_data)
+    except Exception as inst:
+        print(type(inst), inst.args)
+    try:
+        doc.remove_periodic_callback(callback_collect_noise_data_average)
+    except Exception as inst:
+        print(type(inst), inst.args)
+    try:
+        doc.remove_periodic_callback(callback_collect_signal_data_average)
+    except Exception as inst:
+        print(type(inst), inst.args)
+    try:
+        ser.write(raman_configs.STOP_COMMAND)
+    except Exception as inst:
+        print(type(inst), inst.args)
 
 
 def callback_onestep_button():
@@ -283,11 +306,133 @@ def callback_auto_detect_peaks_button():
     peaks_data_source.data = new_peaks_data
 
 
+def callback_set_sample_interval_text_input(attr, old, new):
+    global user_SAMPLE_INTERVAL_IN_SECONDS
+    try:
+        user_SAMPLE_INTERVAL_IN_SECONDS = int(
+            set_sample_interval_text_input.value)
+    except Exception as inst:
+        print(type(inst), inst.args)
+    # print(user_SAMPLE_INTERVAL_IN_SECONDS)
+
+
+def callback_set_noise_sample_size_text_input(attr, old, new):
+    global user_NOISE_SAMPLE_SIZE
+    try:
+        user_NOISE_SAMPLE_SIZE = int(
+            set_noise_sample_size_text_input.value)
+    except Exception as inst:
+        print(type(inst), inst.args)
+    # print(user_NOISE_SAMPLE_SIZE)
+
+
+def callback_set_signal_sample_size_text_input(attr, old, new):
+    global user_SIGNAL_SAMPLE_SIZE
+    try:
+        user_SIGNAL_SAMPLE_SIZE = int(
+            set_signal_sample_size_text_input.value)
+    except Exception as inst:
+        print(type(inst), inst.args)
+    # print(user_SIGNAL_SAMPLE_SIZE)
+
+noise_sample_counter = 0
+
+@gen.coroutine
+def callback_collect_noise_data_average():
+    global noise_sample_counter
+    global noise_data_list
+    global noise_data_averaged_dict
+    if noise_sample_counter <= 0:
+        doc.remove_periodic_callback(callback_collect_noise_data_average)
+        sampling_noise_div.text = "Noise Finished Sampling"
+        noise_data_averaged_dict = CCD_utils.average_over_samples(noise_data_list)
+        waveform_data_source.data = noise_data_averaged_dict
+    if ser.inWaiting():
+        intensities = CCD_protocol_parser.read_data(ser)
+        new_data = dict()
+        new_data['intensities'] = intensities
+        new_data['rawdata_x'] = rawdata_x
+        new_data['raman_spec_x'] = calibrate_model(rawdata_x)
+        waveform_data_source.data = new_data
+        noise_data_list.append(new_data)
+        sampling_noise_div.text = "Sampling Noise: {noise_sample_counter}".format(noise_sample_counter=noise_sample_counter)
+        noise_sample_counter = noise_sample_counter - 1
+
+
+def callback_sample_noise_button():
+    global user_SAMPLE_INTERVAL_IN_SECONDS
+    global user_NOISE_SAMPLE_SIZE
+    global ser
+    # # stop current jobs
+    # doc.add_next_tick_callback(callback_stop_button)
+    # set integration time
+    ser.write(CCD_protocol_parser.to_set_integration_time_command(
+        user_SAMPLE_INTERVAL_IN_SECONDS, 's'))
+    # prepare a new list to store data
+    global noise_data_list
+    noise_data_list = list()
+    # check counter status, start to collect data
+    global noise_sample_counter
+    noise_sample_counter = user_NOISE_SAMPLE_SIZE
+    doc.add_periodic_callback(callback_collect_noise_data_average, 10)
+
+
+signal_sample_counter = 0
+
+@gen.coroutine
+def callback_collect_signal_data_average():
+    global signal_sample_counter
+    global signal_data_list
+    global signal_data_averaged_dict
+    if signal_sample_counter <= 0:
+        doc.remove_periodic_callback(callback_collect_signal_data_average)
+        sampling_signal_div.text = "Signal Finished Sampling"
+        signal_data_averaged_dict = CCD_utils.average_over_samples(signal_data_list)
+        waveform_data_source.data = signal_data_averaged_dict
+    if ser.inWaiting():
+        intensities = CCD_protocol_parser.read_data(ser)
+        new_data = dict()
+        new_data['intensities'] = intensities
+        new_data['rawdata_x'] = rawdata_x
+        new_data['raman_spec_x'] = calibrate_model(rawdata_x)
+        waveform_data_source.data = new_data
+        signal_data_list.append(new_data)
+        sampling_signal_div.text = "Sampling Signal: {signal_sample_counter}".format(signal_sample_counter=signal_sample_counter)
+        signal_sample_counter = signal_sample_counter - 1
+
+
+def callback_sample_signal_button():
+    global user_SAMPLE_INTERVAL_IN_SECONDS
+    global user_SIGNAL_SAMPLE_SIZE
+    global ser
+    # # stop current jobs
+    # doc.add_next_tick_callback(callback_stop_button)
+    # set integration time
+    ser.write(CCD_protocol_parser.to_set_integration_time_command(
+        user_SAMPLE_INTERVAL_IN_SECONDS, 's'))
+    # prepare a new list to store data
+    global signal_data_list
+    signal_data_list = list()
+    # check counter status, start to collect data
+    global signal_sample_counter
+    signal_sample_counter = user_SIGNAL_SAMPLE_SIZE
+    doc.add_periodic_callback(callback_collect_signal_data_average, 10)
+
+
+def callback_subtract_noise_from_signal_button():
+    global signal_data_averaged_dict
+    global noise_data_averaged_dict
+    waveform_data_source.data = CCD_utils.subtract_dict_data(signal_data_averaged_dict, noise_data_averaged_dict)
+    doc.add_next_tick_callback(callback_update_raman_spec)
+
+
+
 ### -------------- define callbacks --------------- ###
 
 ### -------------- make the document -------------- ###
 
-# add widgets
+
+# --- add widgets
 # Select Serial Port Text Input
 select_serial_port_text_input = TextInput(
     title="Serial Port", value=raman_configs.DEFAULT_SERIAL_PORT)
@@ -358,19 +503,19 @@ with open(os.path.join(__location__, 'static/js/export_to_json.js'), 'r') as f:
     export_to_json_js = f.read()
 
 export_data_as_json_button = Button(label="Export Current Data as JSON", callback=CustomJS(
-        args=dict(
-            source=waveform_data_source,
-            ),
-            code=export_to_json_js))
+    args=dict(
+        source=waveform_data_source,
+    ),
+    code=export_to_json_js))
 
 with open(os.path.join(__location__, 'static/js/export_to_csv.js'), 'r') as f:
     export_to_csv_js = f.read()
 
 export_data_as_csv_button = Button(label="Export Current Data as CSV", callback=CustomJS(
-        args=dict(
-            source=waveform_data_source,
-            ),
-            code=export_to_csv_js))
+    args=dict(
+        source=waveform_data_source,
+    ),
+    code=export_to_csv_js))
 
 # Load file button
 with open(os.path.join(__location__, 'static/js/load_file.js'), 'r') as f:
@@ -442,6 +587,38 @@ auto_detect_peaks_columns = [
 auto_detect_peaks_data_table = DataTable(
     source=peaks_data_source, columns=auto_detect_peaks_columns, editable=False, reorderable=True, sortable=True, width=300)
 
+
+# Sampling Noise and Signal by Averaging and Substraction
+
+set_sample_interval_text_input = TextInput(
+    title="Sample Interval in Seconds", value=str(raman_configs.DEFAULT_SAMPLE_INTERVAL_IN_SECONDS))
+set_sample_interval_text_input.on_change(
+    'value', callback_set_sample_interval_text_input)
+
+set_noise_sample_size_text_input = TextInput(
+    title="Noise Sample Size", value=str(raman_configs.DEFAULT_NOISE_SAMPLE_SIZE))
+set_noise_sample_size_text_input.on_change(
+    'value', callback_set_noise_sample_size_text_input)
+
+set_signal_sample_size_text_input = TextInput(
+    title="Signal Sample Size", value=str(raman_configs.DEFAULT_SIGNAL_SAMPLE_SIZE))
+set_signal_sample_size_text_input.on_change(
+    'value', callback_set_signal_sample_size_text_input)
+
+sample_noise_button = Button(label="Sample Noise")
+sample_noise_button.on_click(callback_sample_noise_button)
+
+sampling_noise_div = Div(text="Sampling Noise: 0")
+
+sample_signal_button = Button(label="Sample Signal")
+sample_signal_button.on_click(callback_sample_signal_button)
+
+sampling_signal_div = Div(text="Sampling Signal: 0")
+
+subtract_noise_from_signal_button = Button(label="Subtract Noise From Signal")
+subtract_noise_from_signal_button.on_click(callback_subtract_noise_from_signal_button)
+
+
 # Place Holders
 place_holder1 = Div(text="", height=20)
 place_holder2 = Div(text="", height=20)
@@ -481,8 +658,20 @@ auto_peak_detection_widgets = column(auto_detect_peaks_snr_slider,
 calibrate_widgets = column(manual_calibrate_data_table,
                            select_calibration_regression_model_select, calibrate_curve_figure)
 
+signal_averaging_widgets = column(set_sample_interval_text_input,
+                                  set_noise_sample_size_text_input, 
+                                  set_signal_sample_size_text_input,
+                                  sample_noise_button,
+                                  sampling_noise_div,
+                                  sample_signal_button,
+                                  sampling_signal_div,
+                                  subtract_noise_from_signal_button
+                                  )
+
+
 column1 = row(figure_widgets, input_widgets)
-column2 = row(calibrate_widgets, auto_peak_detection_widgets)
+column2 = row(calibrate_widgets, auto_peak_detection_widgets,
+              signal_averaging_widgets)
 
 
 # put the button and plot in a layout and add to the document

@@ -5,7 +5,6 @@ import numpy as np
 import datetime
 from scipy import interpolate
 
-
 import raman_configs
 
 
@@ -34,6 +33,7 @@ def create_to_save_data(format, data_dict):
         return ''
     elif format == 'XLSX':
         return ''
+
 
 def save_data(format, filename, data_dict, append_time):
     # make a copy to convert it to dict of lists
@@ -77,3 +77,20 @@ def create_1d_regression(data_dict, model):
         return poly
     # if model is not available, do nothing
     return lambda x: x
+
+
+def average_over_samples(data_dict_list):
+    all_keys = set().union(*(d.keys() for d in data_dict_list))
+    data_dict = dict()
+    for key in all_keys:
+        data_list = [d[key] for d in data_dict_list]
+        data_dict[key] = np.mean(data_list, axis=0)
+    return data_dict
+
+
+def subtract_dict_data(data_dict1, data_dict2):
+    keys = data_dict1.keys()
+    new_data_dict = dict()
+    for key in keys:
+        new_data_dict[key] = np.subtract(data_dict1[key], data_dict2[key])
+    return new_data_dict
