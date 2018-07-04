@@ -14,12 +14,12 @@ dependencies for the electron app: see Raman-GUI/package.json
 
 # Docs
 
-The protocal of the CCD controller is in the docs folder.
+The protocol of the CCD controller and other detailed documents are in the docs folder.
 
 ## Raman
 
-The Raman directory is the backend program for the server or embeded host computer connected to the CCD controller physically. The corresponding drivers and python dependencies must be installed on the device that runs the backend program.
-To start the backend server, run the following command outside the Raman directory.
+The `Raman` directory is the backend program for the server or embeded host computer connected to the CCD controller physically. The corresponding drivers and python dependencies must be installed on the device that runs the backend program.
+To start the backend server, run the following command outside the `Raman` directory.
 
     python3 -m bokeh serve Raman --allow-websocket-origin={allowed_origin}
 
@@ -38,11 +38,11 @@ If everything works good, you can now build the Electron app with
 
     electron-packager . --overwrite
 
-Note that for the application to work correctly, python must be added to the PATH variable. Or, you can also explicitly add the path to python executable to the main.js.
+Note that for the application to work correctly, python must be added to the PATH variable. Or, you can also explicitly add the path to python executable to `Raman-GUI/main.js`.
 
 ## Arduino_simulator
 
-The Arduino_simulator is a simple CCD controller simulator that works on most arduino toy chips. The actual CCD controller is developed with stm32f40x chips and cyclone FPGA chips and is much faster than the simulator, so you should be careful when testing high speed sampling with the simulator.
+The Arduino_simulator is a simple CCD controller simulator that works on most arduino toy chips. The actual CCD controller is developed with stm32f40x and cyclone FPGA chips and is much faster than the simulator, so you should be careful when testing high speed sampling with the simulator.
 
 # Design
 
@@ -68,8 +68,9 @@ The Arduino_simulator is a simple CCD controller simulator that works on most ar
 
 # TODO
 
-- The save-file functionality is currently implemented simply with a python function and is not very convenient to use. Consider switching to pure javascript call to save the file at frontend.
+- Some of the regression models to fit the data are listed in the drop-down menu but actually not implemented because it is too trivial to implemet and I don't have enough time for that.
 - There is no frontend design for now and the layout looks very strange. Consider integrating with Bootstrap.
+- The program is only tested on macOS and Linux systems for now because I currently don't have a device running Windows system, bug reports are welcome.
 
 # License
 
