@@ -7,10 +7,12 @@ Note: this is more of a prototype GUI software to controll the raman spectroscop
 
 # Dependencies
 
-dependencies for the python backend:
+Dependencies for the python backend:
 pyserial, numpy, Bokeh, dicttoxml, pandas, scipy
 
-dependencies for the electron app: see Raman-GUI/package.json
+    pip3 install -r requirements.txt
+
+Dependencies for the electron app: see Raman-GUI/package.json
 
 # Docs
 
