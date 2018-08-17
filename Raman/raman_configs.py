@@ -1,6 +1,9 @@
 # testing mod
 IS_TESTING = True
 
+# language settings, currently only English and Chinese
+FRONTEND_LANGUAGE = 'Chinese'
+
 # Width of CCD pixels
 PIXELS_WIDTH = 3694
 
@@ -62,12 +65,6 @@ AUTO_PEAK_DETECT_WIDTHS_MIN = 1
 AUTO_PEAK_DETECT_WIDTHS_MAX = 10
 
 PEAK_MARKS_OVERHANG = 1000
-
-
-
-# just some strings
-WAVELENGTH_UNIT = 'cm⁻¹'
-
 
 
 # Sampling Noise and Signal by Averaging and Substraction

@@ -30,6 +30,7 @@ import CCD_protocol_parser
 import CCD_utils
 import fake_serial
 import raman_configs
+import raman_languages
 
 ### -------------- get things ready --------------- ###
 
@@ -45,11 +46,11 @@ doc = curdoc()
 spectrum_tools = "box_select,box_zoom,lasso_select,pan,poly_select,tap,wheel_zoom,undo,redo,reset,save,crosshair,hover"
 
 # prepare empty figures
-rawdata_figure = figure(title="Real-time DAQ", x_axis_label='Pixel',
-                        y_axis_label='Intensity', plot_width=900, plot_height=500, tools=spectrum_tools)
-raman_spec_figure = figure(title="Raman",
-                           x_axis_label=raman_configs.WAVELENGTH_UNIT,
-                           y_axis_label='Intensity', plot_width=900, plot_height=500, tools=spectrum_tools)
+rawdata_figure = figure(title=raman_languages.TEXT__REAL_TIME_DAQ, x_axis_label=raman_languages.TEXT__PIXEL,
+                        y_axis_label=raman_languages.TEXT__INTENSITY, plot_width=900, plot_height=500, tools=spectrum_tools)
+raman_spec_figure = figure(title=raman_languages.TEXT__RAMAN,
+                           x_axis_label=raman_languages.WAVELENGTH_UNIT,
+                           y_axis_label=raman_languages.TEXT__INTENSITY, plot_width=900, plot_height=500, tools=spectrum_tools)
 
 # prepare empty data
 intensities = np.array([0] * raman_configs.PIXELS_WIDTH)
@@ -251,7 +252,7 @@ file_source = ColumnDataSource({'file_contents': [], 'file_name': []})
 
 
 def file_callback(attr, old, new):
-    loaded_file_div.text = '<font color=#006699>Loaded file: </font>' + \
+    loaded_file_div.text = '<font color=#006699>'+ raman_languages.TEXT__LOADED_FILE +': </font>' + \
         file_source.data['file_name'][0]
     raw_contents = file_source.data['file_contents'][0]
     # # remove the prefix that JS adds
@@ -344,7 +345,7 @@ def callback_collect_noise_data_average():
     global noise_data_averaged_dict
     if noise_sample_counter <= 0:
         doc.remove_periodic_callback(callback_collect_noise_data_average)
-        sampling_noise_div.text = "Noise Finished Sampling"
+        sampling_noise_div.text = raman_languages.TEXT__NOISE_FINISHED_SAMPLING
         noise_data_averaged_dict = CCD_utils.average_over_samples(noise_data_list)
         waveform_data_source.data = noise_data_averaged_dict
     if ser.inWaiting():
@@ -355,7 +356,7 @@ def callback_collect_noise_data_average():
         new_data['raman_spec_x'] = calibrate_model(rawdata_x)
         waveform_data_source.data = new_data
         noise_data_list.append(new_data)
-        sampling_noise_div.text = "Sampling Noise: {noise_sample_counter}".format(noise_sample_counter=noise_sample_counter)
+        sampling_noise_div.text = raman_languages.TEXT__SAMPLING_NOISE + ": {noise_sample_counter}".format(noise_sample_counter=noise_sample_counter)
         noise_sample_counter = noise_sample_counter - 1
 
 
@@ -386,7 +387,7 @@ def callback_collect_signal_data_average():
     global signal_data_averaged_dict
     if signal_sample_counter <= 0:
         doc.remove_periodic_callback(callback_collect_signal_data_average)
-        sampling_signal_div.text = "Signal Finished Sampling"
+        sampling_signal_div.text = raman_languages.TEXT__SIGNAL_FINISHED_SAMPLING
         signal_data_averaged_dict = CCD_utils.average_over_samples(signal_data_list)
         waveform_data_source.data = signal_data_averaged_dict
     if ser.inWaiting():
@@ -397,7 +398,7 @@ def callback_collect_signal_data_average():
         new_data['raman_spec_x'] = calibrate_model(rawdata_x)
         waveform_data_source.data = new_data
         signal_data_list.append(new_data)
-        sampling_signal_div.text = "Sampling Signal: {signal_sample_counter}".format(signal_sample_counter=signal_sample_counter)
+        sampling_signal_div.text = raman_languages.TEXT__SAMPLING_SIGNAL + ": {signal_sample_counter}".format(signal_sample_counter=signal_sample_counter)
         signal_sample_counter = signal_sample_counter - 1
 
 
@@ -435,36 +436,36 @@ def callback_subtract_noise_from_signal_button():
 # --- add widgets
 # Select Serial Port Text Input
 select_serial_port_text_input = TextInput(
-    title="Serial Port", value=raman_configs.DEFAULT_SERIAL_PORT)
+    title=raman_languages.TEXT__SERIAL_PORT, value=raman_configs.DEFAULT_SERIAL_PORT)
 select_serial_port_text_input.on_change(
     'value', callback_select_serial_port_text_input)
 
 # Select Baud Rate
 select_baud_rate_text_input = TextInput(
-    title="Baud Rate", value=str(raman_configs.DEFAULT_BAUD_RATE))
+    title=raman_languages.TEXT__BAUD_RATE, value=str(raman_configs.DEFAULT_BAUD_RATE))
 select_baud_rate_text_input.on_change(
     'value', callback_select_baud_rate_text_input)
 
 # Open Serial Port Button
-open_serial_port_button = Button(label="Open Serial Port")
+open_serial_port_button = Button(label=raman_languages.TEXT__OPEN_SERIAL_PORT)
 open_serial_port_button.on_click(callback_open_serial_port)
 
 # Start Button
 start_collect_data_button = Button(
-    label="Start Collecting Data", button_type='success')
+    label=raman_languages.TEXT__START_COLLECTING_DATA, button_type='success')
 start_collect_data_button.on_click(callback_start_collecting_data_button)
 
 # Stop Button
-stop_button = Button(label="Stop Collecting Data", button_type='warning')
+stop_button = Button(label=raman_languages.TEXT__STOP_COLLECTING_DATA, button_type='warning')
 stop_button.on_click(callback_stop_button)
 
 # Onestep Button
-onestep_button = Button(label="Onestep")
+onestep_button = Button(label=raman_languages.TEXT__ONESTEP)
 onestep_button.on_click(callback_onestep_button)
 
 # Select Integration Time
 select_integration_time_text_input = TextInput(
-    title="Integration Time", value=str(raman_configs.DEFAULT_CCD_INTEGRATION_INTERVAL))
+    title=raman_languages.TEXT__INTEGRATION_TIME, value=str(raman_configs.DEFAULT_CCD_INTEGRATION_INTERVAL))
 select_integration_time_text_input.on_change(
     'value', callback_select_integration_time_text_input)
 
@@ -474,35 +475,35 @@ select_integration_time_unit_radio_button_group = RadioButtonGroup(
 select_integration_time_unit_radio_button_group.on_change('active',
                                                           callback_select_integration_time_unit_radio_button_group)
 # Set Integration Time
-set_integration_time_button = Button(label="Set Integration Time")
+set_integration_time_button = Button(label=raman_languages.TEXT__SET_INTEGRATION_TIME)
 set_integration_time_button.on_click(callback_set_integration_time_button)
 
 # Save path
 save_path_text_input = TextInput(
-    title="Save to...", value=raman_configs.DEFAULT_SAVE_PATH)
+    title=raman_languages.TEXT__SAVE_TO, value=raman_configs.DEFAULT_SAVE_PATH)
 save_path_text_input.on_change(
     'value', callback_save_path_text_input)
 # If current time is automatically appended to the file name
 auto_append_current_time_or_not_radio_button_group = RadioButtonGroup(
-    labels=['Append Time to Filenames', 'Don\'t Append'], active=(0 if raman_configs.AUTO_APPEND_CURRENT_TIME else 0))
+    labels=[raman_languages.TEXT__APPEND_TIME_TO_FILENAMES, raman_languages.TEXT__DONT_APPEND], active=(0 if raman_configs.AUTO_APPEND_CURRENT_TIME else 0))
 auto_append_current_time_or_not_radio_button_group.on_change('active',
                                                              callback_auto_append_current_time_or_not_radio_button_group)
 
 # Select file formats
 select_data_file_format_select = Select(
-    title="Data File Format:", value="JSON", options=["JSON", "XML", "CSV", "XLSX"])
+    title=raman_languages.TEXT__DATA_FILE_FORMAT, value="JSON", options=["JSON", "XML", "CSV", "XLSX"])
 select_data_file_format_select.on_change('value',
                                          callback_select_data_file_format_select)
 
 # # Save Data Button
-save_data_button = Button(label="Save Current Data")
+save_data_button = Button(label=raman_languages.TEXT__SAVE_CURRENT_DATA)
 save_data_button.on_click(callback_save_data_button)
 
 # # 20180704: just another way of saving data
 with open(os.path.join(__location__, 'static/js/export_to_json.js'), 'r') as f:
     export_to_json_js = f.read()
 
-export_data_as_json_button = Button(label="Export Current Data as JSON", callback=CustomJS(
+export_data_as_json_button = Button(label=raman_languages.TEXT__EXPORT_CURRENT_DATA_AS_JSON, callback=CustomJS(
     args=dict(
         source=waveform_data_source,
     ),
@@ -511,7 +512,7 @@ export_data_as_json_button = Button(label="Export Current Data as JSON", callbac
 with open(os.path.join(__location__, 'static/js/export_to_csv.js'), 'r') as f:
     export_to_csv_js = f.read()
 
-export_data_as_csv_button = Button(label="Export Current Data as CSV", callback=CustomJS(
+export_data_as_csv_button = Button(label=raman_languages.TEXT__EXPORT_CURRENT_DATA_AS_CSV, callback=CustomJS(
     args=dict(
         source=waveform_data_source,
     ),
@@ -520,19 +521,19 @@ export_data_as_csv_button = Button(label="Export Current Data as CSV", callback=
 # Load file button
 with open(os.path.join(__location__, 'static/js/load_file.js'), 'r') as f:
     load_file_js = f.read()
-load_file_button = Button(label="Load Data From JSON File", button_type='success', callback=CustomJS(
+load_file_button = Button(label=raman_languages.TEXT__LOAD_DATA_FROM_JSON_FILE, button_type='success', callback=CustomJS(
     args=dict(file_source=file_source), code=load_file_js))
 
-loaded_file_div = Div(text="Loaded file: None")
+loaded_file_div = Div(text=raman_languages.TEXT__LOADED_FILE_NONE)
 
 # Calibration parameters list
 calibrate_params_source = ColumnDataSource(user_calibration_params)
 calibrate_params_source.on_change('data', callback_calibrate_params_change)
 
 manual_calibrate_data_table_columns = [
-    TableColumn(field="pixel_indices", title="Pixel Index",
+    TableColumn(field="pixel_indices", title=raman_languages.TEXT__PIXEL_INDEX,
                 editor=NumberEditor(), formatter=NumberFormatter()),
-    TableColumn(field="wavenumbers", title="Wavenumber/"+raman_configs.WAVELENGTH_UNIT,
+    TableColumn(field="wavenumbers", title=raman_languages.TEXT__WAVENUMBER+"/"+raman_languages.WAVELENGTH_UNIT,
                 editor=NumberEditor(), formatter=NumberFormatter()),
 ]
 
@@ -541,14 +542,14 @@ manual_calibrate_data_table = DataTable(
 
 # Select model
 select_calibration_regression_model_select = Select(
-    title="Calibration Regression Model:", value=raman_configs.DEFAULT_CALIBRATION_REGRESSION_MODEL, options=raman_configs.CALIBRATION_REGRESSION_MODEL_CHOICES)
+    title=raman_languages.TEXT__CALIBRATION_REGRESSION_MODEL, value=raman_configs.DEFAULT_CALIBRATION_REGRESSION_MODEL, options=raman_configs.CALIBRATION_REGRESSION_MODEL_CHOICES)
 select_calibration_regression_model_select.on_change('value',
                                                      callback_select_calibration_regression_model_select)
 
 # calibrate curve figure
-calibrate_curve_figure = figure(title="Calibrate Curve",
-                                x_axis_label='Pixel',
-                                y_axis_label=raman_configs.WAVELENGTH_UNIT, width=300, height=300)
+calibrate_curve_figure = figure(title=raman_languages.TEXT__CALIBRATE_CURVE,
+                                x_axis_label=raman_languages.TEXT__PIXEL,
+                                y_axis_label=raman_languages.WAVELENGTH_UNIT, width=300, height=300)
 
 calibrate_curve_data_source = ColumnDataSource(
     dict(
@@ -563,24 +564,24 @@ calibrate_curve = calibrate_curve_figure.line(
 
 # automatic peak detections
 auto_detect_peaks_snr_slider = Slider(
-    start=1, end=10, value=raman_configs.AUTO_PEAK_DETECT_MIN_SNR, step=1, title="Minimum SNR")
+    start=1, end=10, value=raman_configs.AUTO_PEAK_DETECT_MIN_SNR, step=1, title=raman_languages.TEXT__MINIMUM_SNR)
 auto_detect_peaks_snr_slider.on_change(
     'value', callback_auto_detect_peaks_snr_slider)
 
 
 auto_detect_peaks_widths_range_slider = RangeSlider(start=1, end=100, value=(
-    raman_configs.AUTO_PEAK_DETECT_WIDTHS_MIN, raman_configs.AUTO_PEAK_DETECT_WIDTHS_MAX), step=1, title="Widths to use for calculating CWT matrix")
+    raman_configs.AUTO_PEAK_DETECT_WIDTHS_MIN, raman_configs.AUTO_PEAK_DETECT_WIDTHS_MAX), step=1, title=raman_languages.TEXT__WIDTHS_TO_USE_FOR_CALCULATING_CWT_MATRIX)
 auto_detect_peaks_widths_range_slider.on_change(
     'value', callback_auto_detect_peaks_widths_range_slider)
 
-auto_detect_peaks_button = Button(label="Automatic Peak Detection")
+auto_detect_peaks_button = Button(label=raman_languages.TEXT__AUTOMATIC_PEAK_DETECTION)
 auto_detect_peaks_button.on_click(callback_auto_detect_peaks_button)
 
 
 auto_detect_peaks_columns = [
-    TableColumn(field="wavenumber_peaks", title="Peaks/cm-1",
+    TableColumn(field="wavenumber_peaks", title=raman_languages.TEXT__PEAKS+"/"+raman_languages.WAVELENGTH_UNIT,
                 formatter=NumberFormatter()),
-    TableColumn(field="intensities", title="Intensity",
+    TableColumn(field="intensities", title=raman_languages.TEXT__INTENSITY,
                 formatter=NumberFormatter()),
 ]
 
@@ -591,31 +592,31 @@ auto_detect_peaks_data_table = DataTable(
 # Sampling Noise and Signal by Averaging and Substraction
 
 set_sample_interval_text_input = TextInput(
-    title="Sample Interval in Seconds", value=str(raman_configs.DEFAULT_SAMPLE_INTERVAL_IN_SECONDS))
+    title=raman_languages.TEXT__SAMPLIE_INTERVAL_IN_SECONDS, value=str(raman_configs.DEFAULT_SAMPLE_INTERVAL_IN_SECONDS))
 set_sample_interval_text_input.on_change(
     'value', callback_set_sample_interval_text_input)
 
 set_noise_sample_size_text_input = TextInput(
-    title="Noise Sample Size", value=str(raman_configs.DEFAULT_NOISE_SAMPLE_SIZE))
+    title=raman_languages.TEXT__NOISE_SAMPLE_SIZE, value=str(raman_configs.DEFAULT_NOISE_SAMPLE_SIZE))
 set_noise_sample_size_text_input.on_change(
     'value', callback_set_noise_sample_size_text_input)
 
 set_signal_sample_size_text_input = TextInput(
-    title="Signal Sample Size", value=str(raman_configs.DEFAULT_SIGNAL_SAMPLE_SIZE))
+    title=raman_languages.TEXT__SIGNAL_SAMPLE_SIZE, value=str(raman_configs.DEFAULT_SIGNAL_SAMPLE_SIZE))
 set_signal_sample_size_text_input.on_change(
     'value', callback_set_signal_sample_size_text_input)
 
-sample_noise_button = Button(label="Sample Noise")
+sample_noise_button = Button(label=raman_languages.TEXT__SAMPLE_NOISE)
 sample_noise_button.on_click(callback_sample_noise_button)
 
-sampling_noise_div = Div(text="Sampling Noise: 0")
+sampling_noise_div = Div(text=raman_languages.TEXT__SAMPLING_NOISE+": 0")
 
-sample_signal_button = Button(label="Sample Signal")
+sample_signal_button = Button(label=raman_languages.TEXT__SAMPLE_SIGNAL)
 sample_signal_button.on_click(callback_sample_signal_button)
 
-sampling_signal_div = Div(text="Sampling Signal: 0")
+sampling_signal_div = Div(text=raman_languages.TEXT__SAMPLING_SIGNAL+": 0")
 
-subtract_noise_from_signal_button = Button(label="Subtract Noise From Signal")
+subtract_noise_from_signal_button = Button(label=raman_languages.TEXT__SUBTRACT_NOISE_FROM_SIGNAL)
 subtract_noise_from_signal_button.on_click(callback_subtract_noise_from_signal_button)
 
 

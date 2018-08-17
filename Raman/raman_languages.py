@@ -1,0 +1,89 @@
+import raman_configs
+
+# just some strings
+WAVELENGTH_UNIT = 'cm⁻¹'
+
+if raman_configs.FRONTEND_LANGUAGE == 'Chinese':
+    TEXT__REAL_TIME_DAQ = "实时数据采集"
+    TEXT__PIXEL = '像素'
+    TEXT__INTENSITY = '强度'
+    TEXT__RAMAN = "拉曼光谱"
+    TEXT__LOADED_FILE = '载入的文件'
+    TEXT__NOISE_FINISHED_SAMPLING = "噪音采集完毕"
+    TEXT__SAMPLING_NOISE = '正在采集噪音'
+    TEXT__SIGNAL_FINISHED_SAMPLING = "信号采集完毕"
+    TEXT__SAMPLING_SIGNAL = '正在采集信号'
+    TEXT__SERIAL_PORT = "端口"
+    TEXT__BAUD_RATE = "波特率"
+    TEXT__OPEN_SERIAL_PORT = "打开端口"
+    TEXT__START_COLLECTING_DATA = "开始采集数据"
+    TEXT__STOP_COLLECTING_DATA = "停止采集数据"
+    TEXT__ONESTEP = "单次采集"
+    TEXT__INTEGRATION_TIME = "积分时间"
+    TEXT__SET_INTEGRATION_TIME = "设置积分时间"
+    TEXT__SAVE_TO = "保存至..."
+    TEXT__APPEND_TIME_TO_FILENAMES = '在文件名后自动添加当前时间'
+    TEXT__DONT_APPEND = '不添加'
+    TEXT__DATA_FILE_FORMAT = "数据文件格式:"
+    TEXT__SAVE_CURRENT_DATA = "保存当前数据"
+    TEXT__EXPORT_CURRENT_DATA_AS_JSON = "导出当前数据为JSON"
+    TEXT__EXPORT_CURRENT_DATA_AS_CSV = "导出当前数据为CSV"
+    TEXT__LOAD_DATA_FROM_JSON_FILE = "从JSON文件中载入数据"
+    TEXT__LOADED_FILE_NONE = "载入的文件: 无"
+    TEXT__PIXEL_INDEX = "像素编号"
+    TEXT__WAVENUMBER = '波数'
+    TEXT__CALIBRATION_REGRESSION_MODEL = "校正回归模型:"
+    TEXT__CALIBRATE_CURVE = "校正曲线"
+    TEXT__MINIMUM_SNR = "最小信噪比"
+    TEXT__WIDTHS_TO_USE_FOR_CALCULATING_CWT_MATRIX = "计算连续小波变换矩阵时使用的宽度"
+    TEXT__AUTOMATIC_PEAK_DETECTION = "自动寻峰"
+    TEXT__PEAKS = '峰位'
+    TEXT__SAMPLIE_INTERVAL_IN_SECONDS = "每个样本的采集时间"
+    TEXT__NOISE_SAMPLE_SIZE = "噪声样本数量"
+    TEXT__SIGNAL_SAMPLE_SIZE = "信号样本数量"
+    TEXT__SAMPLE_NOISE = "采集噪声"
+    TEXT__SAMPLE_SIGNAL = "采集信号"
+    TEXT__SUBTRACT_NOISE_FROM_SIGNAL = "从信号中减去噪声"
+elif raman_configs.FRONTEND_LANGUAGE == 'English':
+    TEXT__REAL_TIME_DAQ = "Real-time DAQ"
+    TEXT__PIXEL = 'Pixel'
+    TEXT__INTENSITY = 'Intensity'
+    TEXT__RAMAN = "Raman"
+    TEXT__LOADED_FILE = 'Loaded file'
+    TEXT__NOISE_FINISHED_SAMPLING = "Noise Finished Sampling"
+    TEXT__SAMPLING_NOISE = 'Sampling Noise'
+    TEXT__SIGNAL_FINISHED_SAMPLING = "Signal Finished Sampling"
+    TEXT__SAMPLING_SIGNAL = 'Sampling Signal'
+    TEXT__SERIAL_PORT = "Serial Port"
+    TEXT__BAUD_RATE = "Baud Rate"
+    TEXT__OPEN_SERIAL_PORT = "Open Serial Port"
+    TEXT__START_COLLECTING_DATA = "Start Collecting Data"
+    TEXT__STOP_COLLECTING_DATA = "Stop Collecting Data"
+    TEXT__ONESTEP = "Onestep"
+    TEXT__INTEGRATION_TIME = "Integration Time"
+    TEXT__SET_INTEGRATION_TIME = "Set Integration Time"
+    TEXT__SAVE_TO = "Save to..."
+    TEXT__APPEND_TIME_TO_FILENAMES = 'Append Time to Filenames'
+    TEXT__DONT_APPEND = 'Don\'t Append'
+    TEXT__DATA_FILE_FORMAT = "Data File Format:"
+    TEXT__SAVE_CURRENT_DATA = "Save Current Data"
+    TEXT__EXPORT_CURRENT_DATA_AS_JSON = "Export Current Data as JSON"
+    TEXT__EXPORT_CURRENT_DATA_AS_CSV = "Export Current Data as CSV"
+    TEXT__LOAD_DATA_FROM_JSON_FILE = "Load Data From JSON File"
+    TEXT__LOADED_FILE_NONE = "Loaded file: None"
+    TEXT__PIXEL_INDEX = "Pixel Index"
+    TEXT__WAVENUMBER = 'Wavenumber'
+    TEXT__CALIBRATION_REGRESSION_MODEL = "Calibration Regression Model:"
+    TEXT__CALIBRATE_CURVE = "Calibrate Curve"
+    TEXT__MINIMUM_SNR = "Minimum SNR"
+    TEXT__WIDTHS_TO_USE_FOR_CALCULATING_CWT_MATRIX = "Widths to use for calculating CWT matrix"
+    TEXT__AUTOMATIC_PEAK_DETECTION = "Automatic Peak Detection"
+    TEXT__PEAKS = 'Peaks'
+    TEXT__SAMPLIE_INTERVAL_IN_SECONDS = "Sample Interval in Seconds"
+    TEXT__NOISE_SAMPLE_SIZE = "Noise Sample Size"
+    TEXT__SIGNAL_SAMPLE_SIZE = "Signal Sample Size"
+    TEXT__SAMPLE_NOISE = "Sample Noise"
+    TEXT__SAMPLE_SIGNAL = "Sample Signal"
+    TEXT__SUBTRACT_NOISE_FROM_SIGNAL = "Subtract Noise From Signal"
+else:
+    pass

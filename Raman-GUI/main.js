@@ -7,27 +7,9 @@ const fixPath = require('fix-path');
 
 fixPath();
 
-
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win
-
-// function loadBokehServer() {
-//     // Load the Bokeh Server.
-//     var PythonShell = require('python-shell');
-//     var options = {
-//         mode: 'text',
-//         pythonPath: '/usr/local/bin/python3',
-//         pythonOptions: ['-m'],
-//         scriptPath: '',
-//         args: ['serve', __dirname.concat('/Raman/')]
-//     };
-//     var pshell = PythonShell.run('bokeh', options, function (err, results) {
-//         if (err) throw err;
-//         console.log('results: %j', results);
-//     });
-//     return pshell;
-// }
 
 function loadBokehServer() {
     // Load the Bokeh Server.
