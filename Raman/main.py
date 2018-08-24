@@ -252,7 +252,7 @@ file_source = ColumnDataSource({'file_contents': [], 'file_name': []})
 
 
 def file_callback(attr, old, new):
-    loaded_file_div.text = '<font color=#006699>'+ raman_languages.TEXT__LOADED_FILE +': </font>' + \
+    loaded_file_div.text = '<font color=#006699>' + raman_languages.TEXT__LOADED_FILE + ': </font>' + \
         file_source.data['file_name'][0]
     raw_contents = file_source.data['file_contents'][0]
     # # remove the prefix that JS adds
@@ -336,7 +336,9 @@ def callback_set_signal_sample_size_text_input(attr, old, new):
         print(type(inst), inst.args)
     # print(user_SIGNAL_SAMPLE_SIZE)
 
+
 noise_sample_counter = 0
+
 
 @gen.coroutine
 def callback_collect_noise_data_average():
@@ -346,7 +348,8 @@ def callback_collect_noise_data_average():
     if noise_sample_counter <= 0:
         doc.remove_periodic_callback(callback_collect_noise_data_average)
         sampling_noise_div.text = raman_languages.TEXT__NOISE_FINISHED_SAMPLING
-        noise_data_averaged_dict = CCD_utils.average_over_samples(noise_data_list)
+        noise_data_averaged_dict = CCD_utils.average_over_samples(
+            noise_data_list)
         waveform_data_source.data = noise_data_averaged_dict
     if ser.inWaiting():
         intensities = CCD_protocol_parser.read_data(ser)
@@ -356,7 +359,9 @@ def callback_collect_noise_data_average():
         new_data['raman_spec_x'] = calibrate_model(rawdata_x)
         waveform_data_source.data = new_data
         noise_data_list.append(new_data)
-        sampling_noise_div.text = raman_languages.TEXT__SAMPLING_NOISE + ": {noise_sample_counter}".format(noise_sample_counter=noise_sample_counter)
+        sampling_noise_div.text = raman_languages.TEXT__SAMPLING_NOISE + \
+            ": {noise_sample_counter}".format(
+                noise_sample_counter=noise_sample_counter)
         noise_sample_counter = noise_sample_counter - 1
 
 
@@ -380,6 +385,7 @@ def callback_sample_noise_button():
 
 signal_sample_counter = 0
 
+
 @gen.coroutine
 def callback_collect_signal_data_average():
     global signal_sample_counter
@@ -388,7 +394,8 @@ def callback_collect_signal_data_average():
     if signal_sample_counter <= 0:
         doc.remove_periodic_callback(callback_collect_signal_data_average)
         sampling_signal_div.text = raman_languages.TEXT__SIGNAL_FINISHED_SAMPLING
-        signal_data_averaged_dict = CCD_utils.average_over_samples(signal_data_list)
+        signal_data_averaged_dict = CCD_utils.average_over_samples(
+            signal_data_list)
         waveform_data_source.data = signal_data_averaged_dict
     if ser.inWaiting():
         intensities = CCD_protocol_parser.read_data(ser)
@@ -398,7 +405,9 @@ def callback_collect_signal_data_average():
         new_data['raman_spec_x'] = calibrate_model(rawdata_x)
         waveform_data_source.data = new_data
         signal_data_list.append(new_data)
-        sampling_signal_div.text = raman_languages.TEXT__SAMPLING_SIGNAL + ": {signal_sample_counter}".format(signal_sample_counter=signal_sample_counter)
+        sampling_signal_div.text = raman_languages.TEXT__SAMPLING_SIGNAL + \
+            ": {signal_sample_counter}".format(
+                signal_sample_counter=signal_sample_counter)
         signal_sample_counter = signal_sample_counter - 1
 
 
@@ -423,14 +432,15 @@ def callback_sample_signal_button():
 def callback_subtract_noise_from_signal_button():
     global signal_data_averaged_dict
     global noise_data_averaged_dict
-    waveform_data_source.data = CCD_utils.subtract_dict_data(signal_data_averaged_dict, noise_data_averaged_dict)
+    waveform_data_source.data = CCD_utils.subtract_dict_data(
+        signal_data_averaged_dict, noise_data_averaged_dict)
     doc.add_next_tick_callback(callback_update_raman_spec)
-
 
 
 ### -------------- define callbacks --------------- ###
 
 ### -------------- make the document -------------- ###
+
 
 
 # --- add widgets
@@ -456,7 +466,8 @@ start_collect_data_button = Button(
 start_collect_data_button.on_click(callback_start_collecting_data_button)
 
 # Stop Button
-stop_button = Button(label=raman_languages.TEXT__STOP_COLLECTING_DATA, button_type='warning')
+stop_button = Button(
+    label=raman_languages.TEXT__STOP_COLLECTING_DATA, button_type='warning')
 stop_button.on_click(callback_stop_button)
 
 # Onestep Button
@@ -475,7 +486,8 @@ select_integration_time_unit_radio_button_group = RadioButtonGroup(
 select_integration_time_unit_radio_button_group.on_change('active',
                                                           callback_select_integration_time_unit_radio_button_group)
 # Set Integration Time
-set_integration_time_button = Button(label=raman_languages.TEXT__SET_INTEGRATION_TIME)
+set_integration_time_button = Button(
+    label=raman_languages.TEXT__SET_INTEGRATION_TIME)
 set_integration_time_button.on_click(callback_set_integration_time_button)
 
 # Save path
@@ -574,7 +586,8 @@ auto_detect_peaks_widths_range_slider = RangeSlider(start=1, end=100, value=(
 auto_detect_peaks_widths_range_slider.on_change(
     'value', callback_auto_detect_peaks_widths_range_slider)
 
-auto_detect_peaks_button = Button(label=raman_languages.TEXT__AUTOMATIC_PEAK_DETECTION)
+auto_detect_peaks_button = Button(
+    label=raman_languages.TEXT__AUTOMATIC_PEAK_DETECTION)
 auto_detect_peaks_button.on_click(callback_auto_detect_peaks_button)
 
 
@@ -616,8 +629,10 @@ sample_signal_button.on_click(callback_sample_signal_button)
 
 sampling_signal_div = Div(text=raman_languages.TEXT__SAMPLING_SIGNAL+": 0")
 
-subtract_noise_from_signal_button = Button(label=raman_languages.TEXT__SUBTRACT_NOISE_FROM_SIGNAL)
-subtract_noise_from_signal_button.on_click(callback_subtract_noise_from_signal_button)
+subtract_noise_from_signal_button = Button(
+    label=raman_languages.TEXT__SUBTRACT_NOISE_FROM_SIGNAL)
+subtract_noise_from_signal_button.on_click(
+    callback_subtract_noise_from_signal_button)
 
 
 # Place Holders
@@ -660,7 +675,7 @@ calibrate_widgets = column(manual_calibrate_data_table,
                            select_calibration_regression_model_select, calibrate_curve_figure)
 
 signal_averaging_widgets = column(set_sample_interval_text_input,
-                                  set_noise_sample_size_text_input, 
+                                  set_noise_sample_size_text_input,
                                   set_signal_sample_size_text_input,
                                   sample_noise_button,
                                   sampling_noise_div,
