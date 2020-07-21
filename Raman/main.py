@@ -130,7 +130,10 @@ def callback_open_serial_port():
     if raman_configs.IS_TESTING:
         ser = fake_serial.FakeSerial()
     else:
-        ser = serial.Serial(user_serial_port,
+        if user_baud_rate == 0:
+            ser = serial.Serial(user_serial_port, timeout=1)
+        else:
+            ser = serial.Serial(user_serial_port,
                             user_baud_rate, timeout=1)
 
     # --- configure CCD to it's default settings
@@ -515,26 +518,37 @@ save_data_button.on_click(callback_save_data_button)
 with open(os.path.join(__location__, 'static/js/export_to_json.js'), 'r') as f:
     export_to_json_js = f.read()
 
-export_data_as_json_button = Button(label=raman_languages.TEXT__EXPORT_CURRENT_DATA_AS_JSON, callback=CustomJS(
+export_data_as_json_button_callback = CustomJS(
     args=dict(
         source=waveform_data_source,
     ),
-    code=export_to_json_js))
+    code=export_to_json_js)
+
+export_data_as_json_button = Button(label=raman_languages.TEXT__EXPORT_CURRENT_DATA_AS_JSON)
+export_data_as_json_button.js_on_event('tap', export_data_as_json_button_callback)
 
 with open(os.path.join(__location__, 'static/js/export_to_csv.js'), 'r') as f:
     export_to_csv_js = f.read()
 
-export_data_as_csv_button = Button(label=raman_languages.TEXT__EXPORT_CURRENT_DATA_AS_CSV, callback=CustomJS(
+export_data_as_csv_button_callback = CustomJS(
     args=dict(
         source=waveform_data_source,
     ),
-    code=export_to_csv_js))
+    code=export_to_csv_js)
+
+export_data_as_csv_button = Button(label=raman_languages.TEXT__EXPORT_CURRENT_DATA_AS_CSV)
+export_data_as_csv_button.js_on_event('tap', export_data_as_csv_button_callback)
+
 
 # Load file button
 with open(os.path.join(__location__, 'static/js/load_file.js'), 'r') as f:
     load_file_js = f.read()
-load_file_button = Button(label=raman_languages.TEXT__LOAD_DATA_FROM_JSON_FILE, button_type='success', callback=CustomJS(
-    args=dict(file_source=file_source), code=load_file_js))
+
+load_file_button_callback = CustomJS(
+    args=dict(file_source=file_source), code=load_file_js)
+
+load_file_button = Button(label=raman_languages.TEXT__LOAD_DATA_FROM_JSON_FILE, button_type='success')
+load_file_button.js_on_event('tap', load_file_button_callback)
 
 loaded_file_div = Div(text=raman_languages.TEXT__LOADED_FILE_NONE)
 

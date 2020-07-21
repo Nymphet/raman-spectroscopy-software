@@ -1,5 +1,5 @@
 # testing mod
-IS_TESTING = True
+IS_TESTING = False
 
 # language settings, currently only English and Chinese
 FRONTEND_LANGUAGE = 'Chinese'
@@ -8,8 +8,8 @@ FRONTEND_LANGUAGE = 'Chinese'
 PIXELS_WIDTH = 3694
 
 # Serial port settings
-DEFAULT_SERIAL_PORT = '/dev/tty.usbserial-A505LIEG'
-DEFAULT_BAUD_RATE = 921600
+DEFAULT_SERIAL_PORT = '/dev/tty.usbmodem8D88588656511'
+DEFAULT_BAUD_RATE = 0
 
 # protocols
 STOP_COMMAND = '#Stop%'.encode()

@@ -10,8 +10,10 @@ import raman_configs
 def parse_CCD_output(bytes_buffer):
     # check the length of the buffer
     assert len(bytes_buffer) == raman_configs.PIXELS_WIDTH * 2, "Illegal buffer size."
-    # formatting : little endian, total length 3694(PIXELS_WIDTH), unsigned short
-    fmt = '<3694H'
+    # formatting : little endian, total length 3694 (PIXELS_WIDTH), unsigned short
+    fmt = '<{PIXELS_WIDTH}H'.format(PIXELS_WIDTH=raman_configs.PIXELS_WIDTH)
+    # formatting : big endian, total length 3694 (PIXELS_WIDTH), unsigned short
+    # fmt = '>{PIXELS_WIDTH}H'.format(PIXELS_WIDTH=raman_configs.PIXELS_WIDTH)
     return struct.unpack(fmt, bytes_buffer)
 
 
