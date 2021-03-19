@@ -2,7 +2,7 @@ altgraph==0.16.1
 bokeh==0.13.0
 dicttoxml==1.7.4
 future==0.16.0
-Jinja2==2.10
+Jinja2==2.11.3
 macholib==1.10
 MarkupSafe==1.0
 numpy==1.15.0
