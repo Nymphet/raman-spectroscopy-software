@@ -15,7 +15,7 @@ pypiwin32==223
 pyserial==3.4
 python-dateutil==2.7.3
 pytz==2018.5
-pywin32==223
+pywin32==301
 pyyaml>=4.2b1
 scipy==1.1.0
 six==1.11.0
