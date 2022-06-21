@@ -5,7 +5,7 @@ future==0.16.0
 Jinja2==2.10
 macholib==1.10
 MarkupSafe==1.0
-numpy==1.15.0
+numpy==1.22.0
 packaging==17.1
 pandas==0.23.4
 pefile==2018.8.8
